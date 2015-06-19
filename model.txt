@@ -1,0 +1,42 @@
+//model
+////////////////////////////////////////////////
+
+
+//元素
+var Element = {
+	_id:   *,    //系统id
+	name: *,    //元素名称
+	eleType: *	//元素类型(1货币,2道具,3深度链接,4触发点)
+	eleId:*,	//子id	
+	eleconfig:{
+		icon: *,//图标
+	}
+
+};
+
+//基础活动
+var BasicActivity = {
+	_id: *,						//基础活动id
+	name: *,					//string
+	actType: *,					//类型定义 (
+									1话题
+									2排行榜
+									3礼包兑换码
+									4通知
+									5插屏通知
+									6分享奖励
+									7排行版奖励
+									8登录奖励
+								)
+	actConfig:[{key:val}, ...],	//基本活动设定数组
+	inProps:[PropElement],		//输入活动数组
+	outProps:[PropElement]		//输出活动数组
+}
+
+//活动
+var Activity = {
+	_id:*,		//活动id
+	name: *,	//string
+	create:  *, //创建时间
+	items:[ActiveElement],
+}

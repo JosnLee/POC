@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, height=device-height, width=device-width, user-scalable=no"/>
+    <meta name="apple-mobile-web-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="fragment" content="!" />
+    <link rel="stylesheet" type="text/css" href="vender/bootstrap/v2.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="poc.css">
+ </head>
+<body style="background-image:url(linen-lighter.png)">
+<h2>POC</h2>
+<div ng-app="sortableApp" ng-controller="sortableController">
+
+    <div class="row" style="margin-left: 20px;margin-bottom: 20px">
+        <nav class="navbar navbar-default" role="navigation">
+            <div>
+
+                <button type="button" class="btn btn-primary" ng-click="getTemplate()" data-toggle="modal" data-target="#templateModal">打开</button>
+                <button type="button " class="btn" ng-click="itemsUpdate()">保存</button>
+                <button type="button " class="btn" data-toggle="modal" data-target="#templateNewModal">新建</button>
+                <button type="button " class="btn" ng-click="saveAs()">另存为</button>
+            </div>
+        </nav>
+    </div>
+    <div style="text-align: center;font-size: 20px">{{activityTpl}}</div>
+
+
+    <div class="floatleft" style="float: left;width: 20%;height: 100%" >
+            <div style="margin-left: 20px">基础组件</div>
+            <div ui-sortable="sortableOptionsList[0]" class="apps-container screen floatleft" ng-model="rawScreens[0]">
+                <div class="app"  ng-repeat="app in rawScreens[0]"> {{app.name}}</div>
+            </div>
+
+        </div>
+        <div style="float: left;width: 75%; margin-left: 20px;min-height: 100px" >
+            <div style="margin-left: 20px">活动设置</div>
+
+            <div style="width: 90%" ui-sortable="sortableOptionsList[1]" class="apps-container screen floatleft" ng-model="rawScreens[1]">
+                <div  style="text-align: left;height: 80px;" class="app" ng-repeat="app in rawScreens[1]">
+                    {{app.name}}<span style="float: right">
+
+
+                <i class="icon-globe icon-white"  title="查看" data-toggle="modal" data-target="#myModal"  ></i> <i class="icon-edit icon-white" title="编辑"  ng-click="activityClick($index,app)" ></i> <i class="icon-trash icon-white" title="删除"  ng-click="delete($index)"></i></span>
+
+                <div  ng-if="app.actType==101&&app.config.category"><span>标题：{{app.config.category|topicFilter}} </span><span style="margin-left: 10px">内容：{{app.config.content}}</span></div>
+                <div ng-if="app.actType==103&&app.config.title"><span>标题：{{app.config.title}} </span><span style="margin-left: 10px">内容：{{app.config.content}}</span>  <span style="margin-left: 10px">发至：所有用户</span>
+                    <span style="margin-left: 10px">显示设置：{{app.config.appearance|appearanceFilter}}</span>
+                </div>
+               <div ng-if="app.actType==102&&app.config.title"><span>标题：{{app.config.title}} </span><span style="margin-left: 10px">内容：{{app.config.content}}
+
+                <span style="margin-left: 10px"> 按钮行为:{{app.config.action}}</span>
+                <span style="margin-left: 10px"> 按钮内容:{{app.config.button_title}}</span>
+                <span style="margin-left: 10px"> 版本:{{app.config.versions}}</span>
+                </span>
+
+                </div>
+
+                </div>
+            </div>
+            <div style="clear: both;"></div>
+        </div>
+
+
+    <div class="modal fade modal-detail" id="myModal" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" >
+                <div class="modal-header header" >
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        话题修改
+                    </h4>
+                </div>
+                <div class="modal-body" style="min-height:300px;">
+                      <div >活动名称:<input type="text" ng-model="event.name"></div>
+                      <div class="lay1">话题类别:<label ng-repeat="category in category_class"><input type="radio"  ng-click="categoryClick(category)" name="category" ng-checked="category.isChecked"> {{category.name}}</label></div>
+                      <div class="lay1" style="height: 100px">内容:<textarea style="width: 80%;height: 100px" ng-model="content"></textarea></div>
+                </div>
+                <div class="modal-footer modal-bottom">
+                    <button type="button" class="btn btn-default"
+                            data-dismiss="modal">关闭
+                    </button>
+                    <button type="button" class="btn btn-primary" ng-click="categorySure()" data-dismiss="modal">
+                        确定
+                    </button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div>
+     </div>
+
+    <!--奖励创建-->
+    <div class="modal fade modal-detail" id="rewardModal" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" >
+                <div class="modal-header header" >
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title">
+                        奖励修改
+                    </h4>
+                </div>
+                <div class="modal-body" style="min-height:300px;">
+                      <div>名称:<input type="text" ng-model="event.name"></div>
+                      <div>标题:<input type="text" ng-model="title"></label></div>
+                      <div class="lay1" style="height: 100px">信息:<textarea style="width: 80%;height: 100px" ng-model="content"></textarea></div>
+                      <span class="lay">发至:<span>所有玩家</span>
+                      <div class="lay1">显示设置:<label ng-repeat="appearance in appearances"><input type="radio"  ng-click="appearanceClick(appearance)" name="appearance" ng-checked="appearance.isChecked"> {{appearance.name}}</label></div>
+
+                </div>
+                <div class="modal-footer modal-bottom">
+                    <button type="button" class="btn btn-default"
+                            data-dismiss="modal">关闭
+                    </button>
+                    <button type="button" class="btn btn-primary" ng-click="rewardSure()" data-dismiss="modal">
+                        确定
+                    </button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div>
+     </div>
+    <div class="modal fade modal-detail" id="pointModal" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" >
+                <div class="modal-header header" >
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title">
+                        插屏通知
+                    </h4>
+                </div>
+                <div class="modal-body" style="min-height:300px;">
+                      <div>名称:<input type="text" ng-model="event.name"></div>
+                      <div>标题:<input type="text" ng-model="title"></label></div>
+                      <div class="lay1" style="height: 100px">信息:<textarea style="width: 80%;height: 100px" ng-model="content"></textarea></div>
+
+
+                </div>
+                <div class="modal-footer modal-bottom">
+                    <button type="button" class="btn btn-default"
+                            data-dismiss="modal">关闭
+                    </button>
+                    <button type="button" class="btn btn-primary" ng-click="pointSure()" data-dismiss="modal">
+                        确定
+                    </button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div>
+     </div>
+
+    <div class="modal fade modal-detail" id="templateNewModal" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" >
+                <div class="modal-header header" >
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" >
+                        活动创建
+                    </h4>
+                </div>
+                <div class="modal-body " style="min-height: 100px;" >
+                    <div class="lay" style="margin-left: 30%"><label >活动名称:</label><input type="text" ng-model="tempName"><label style="  margin-left: 16%;"><input type="checkbox" ng-model="isTpl">是否存储为模板 </label></div>
+
+                </div>
+                <div class="modal-footer modal-bottom">
+                    <button type="button" class="btn btn-default"
+                            data-dismiss="modal">关闭
+                    </button>
+                    <button type="button" class="btn btn-primary" ng-click="saveTpl()">
+                        确定
+                    </button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div>
+    </div>
+
+    <div class="modal fade modal-detail" id="templateModal" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" >
+                <div class="modal-header header" >
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" >
+                        活动列表
+                    </h4>
+                </div>
+                <div class="modal-body " >
+                    <div heading="{{template.templateClass}}">
+                        <div><h4>默认分类</h4></div>
+                        <div class="child-edit-games-box">
+                            <div>
+                                <ul>
+                                    <li ng-repeat="activity in activitys" ng-dblclick="templateDbClik($index,activity)" ng-click="templateChecked($index)" ng-class="{'span-checked':$index==index}">
+                                        <label>
+                                            <span class="child_edit_seeting_name" title="{{activity.name}}">{{activity.name}}{{activity.bTpl|isTpl}}</span>
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+               </div>
+                <div class="modal-footer modal-bottom">
+                    <button type="button" class="btn btn-default"
+                            data-dismiss="modal">关闭
+                    </button>
+                    <button type="button" class="btn btn-primary" ng-click="activeOPen()" >
+                        打开
+                    </button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div>
+    </div>
+
+    <script src="vender/jquery_and_jqueryui.js"></script>
+    <script src="vender/angular-1.3.8.min.js"></script>
+
+    <script src="vender/sortable.js"></script>
+    <script src="vender/bootstrap/v2.3.2/js/bootstrap.min.js"></script>
+    <script src="pocJS.js"></script>
+
+</div>
+
+</body>
+</html>
