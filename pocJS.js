@@ -172,6 +172,13 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
 
     $scope.categoryClick = function (category) {
         $scope.categoryid = category.id
+        $scope.category_class.forEach(function(item){
+            if(item.categoryid==category.id){
+                category.isChecked=true;
+            }else{
+                category.isChecked=false;
+            }
+        })
 
     }
 
