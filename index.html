@@ -11,6 +11,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <meta name="fragment" content="!" />
     <link rel="stylesheet" type="text/css" href="vender/bootstrap/v2.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="vender/jquery-ui.css">
     <link rel="stylesheet" type="text/css" href="poc.css">
  </head>
 <body style="background-image:url(linen-lighter.png)">
@@ -39,10 +40,65 @@
 
         </div>
         <div style="float: left;width: 75%; margin-left: 20px;min-height: 100px" >
-            <div style="margin-left: 20px">活动设置</div>
+            <div style="margin-left: 20px">预热阶段<label style="margin-left: 10px">开始时间:<input kt-date-time min-date="minDate" ng-model="beginDate" ></label><label>结束时间:<input type="date" ></label></div>
 
             <div style="width: 90%" ui-sortable="sortableOptionsList[1]" class="apps-container screen floatleft" ng-model="rawScreens[1]">
                 <div  style="text-align: left;height: 80px;" class="app" ng-repeat="app in rawScreens[1]">
+                    {{app.name}}<span style="float: right">
+
+
+                <i class="icon-globe icon-white"  title="查看" data-toggle="modal" data-target="#myModal"  ></i> <i class="icon-edit icon-white" title="编辑"  ng-click="activityClick($index,app)" ></i> <i class="icon-trash icon-white" title="删除"  ng-click="delete($index)"></i></span>
+
+                <div  ng-if="app.actType==101&&app.config.category"><span>标题：{{app.config.category|topicFilter}} </span><span style="margin-left: 10px">内容：{{app.config.content}}</span></div>
+                <div ng-if="app.actType==103&&app.config.title"><span>标题：{{app.config.title}} </span><span style="margin-left: 10px">内容：{{app.config.content}}</span>  <span style="margin-left: 10px">发至：所有用户</span>
+                    <span style="margin-left: 10px">显示设置：{{app.config.appearance|appearanceFilter}}</span>
+                </div>
+               <div ng-if="app.actType==102&&app.config.title"><span>标题：{{app.config.title}} </span><span style="margin-left: 10px">内容：{{app.config.content}}
+
+                <span style="margin-left: 10px"> 按钮行为:{{app.config.action}}</span>
+                <span style="margin-left: 10px"> 按钮内容:{{app.config.button_title}}</span>
+                <span style="margin-left: 10px"> 版本:{{app.config.versions}}</span>
+                </span>
+
+                </div>
+
+                </div>
+            </div>
+            <div style="clear: both;"></div>
+        </div>
+        <div style="float: left;width: 75%; margin-left: 20px;min-height: 100px" >
+            <div style="margin-left: 20px">进行阶段<label style="margin-left: 10px">开始时间:<input type="date" ></label><label>结束时间:<input type="date" ></label></div>
+
+            <div style="width: 90%" ui-sortable="sortableOptionsList[2]" class="apps-container screen floatleft" ng-model="rawScreens[2]">
+                <div  style="text-align: left;height: 80px;" class="app" ng-repeat="app in rawScreens[2]">
+                    {{app.name}}<span style="float: right">
+
+
+                <i class="icon-globe icon-white"  title="查看" data-toggle="modal" data-target="#myModal"  ></i> <i class="icon-edit icon-white" title="编辑"  ng-click="activityClick($index,app)" ></i> <i class="icon-trash icon-white" title="删除"  ng-click="delete($index)"></i></span>
+
+                <div  ng-if="app.actType==101&&app.config.category"><span>标题：{{app.config.category|topicFilter}} </span><span style="margin-left: 10px">内容：{{app.config.content}}</span></div>
+                <div ng-if="app.actType==103&&app.config.title"><span>标题：{{app.config.title}} </span><span style="margin-left: 10px">内容：{{app.config.content}}</span>  <span style="margin-left: 10px">发至：所有用户</span>
+                    <span style="margin-left: 10px">显示设置：{{app.config.appearance|appearanceFilter}}</span>
+                </div>
+               <div ng-if="app.actType==102&&app.config.title"><span>标题：{{app.config.title}} </span><span style="margin-left: 10px">内容：{{app.config.content}}
+
+                <span style="margin-left: 10px"> 按钮行为:{{app.config.action}}</span>
+                <span style="margin-left: 10px"> 按钮内容:{{app.config.button_title}}</span>
+                <span style="margin-left: 10px"> 版本:{{app.config.versions}}</span>
+                </span>
+
+                </div>
+
+                </div>
+            </div>
+            <div style="clear: both;"></div>
+        </div>
+        <div style="float: left;width: 75%; margin-left: 20px;min-height: 100px" >
+
+            <div style="margin-left: 20px">结束阶段<label style="margin-left: 10px">开始时间:<input type="date" ></label><label>结束时间:<input type="date" ></label></div>
+
+            <div style="width: 90%" ui-sortable="sortableOptionsList[3]" class="apps-container screen floatleft" ng-model="rawScreens[3]">
+                <div  style="text-align: left;height: 80px;" class="app" ng-repeat="app in rawScreens[3]">
                     {{app.name}}<span style="float: right">
 
 
@@ -235,8 +291,10 @@
 
     <script src="vender/jquery_and_jqueryui.js"></script>
     <script src="vender/angular-1.3.8.min.js"></script>
+    <script src="helper.js"></script>
 
     <script src="vender/sortable.js"></script>
+    <script src="vender/date.js"></script>
     <script src="vender/bootstrap/v2.3.2/js/bootstrap.min.js"></script>
     <script src="pocJS.js"></script>
 

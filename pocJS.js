@@ -1,22 +1,26 @@
-var myapp = angular.module('sortableApp', ['ui.sortable']);
+var myapp = angular.module('sortableApp', ['ui.sortable','ui.date']);
 
 
 myapp.controller('sortableController', function ($scope, $http, $filter) {
     var tmpList = [];
-    var baseUrl = "http://"+window.location.hostname+":3050/";
-    var _apiHost = "http://"+window.location.hostname+':3060';
-    //var baseUrl = "http://192.168.1.24:3050/";
-    //var _apiHost = "http://192.168.1.24:3060";
+    //var baseUrl = "http://"+window.location.hostname+":3050/";
+    //var _apiHost = "http://"+window.location.hostname+':3060';
+    var baseUrl = "http://192.168.0.29:3050/";
+    var _apiHost = "http://192.168.0.29:3060";
 
     var _apiGameId = 4401;
     var _apiToken = "zDJj49szj8g17cD64iouWASGHIb3fjDi2v2ZNsxhhMK9VBEXbnMASV_5bkkSAniL";
     var _apiCall = {
-        apiTopicList:{uri:'/portal/community/topic/list',  ui:''},
-        apiTopicNew:{uri:'/portal/community/topic/create',  ui:''},
-        apiIntNew:{uri:'/portal/community/intersitial/create',  ui:''},
-        apiRewardNew:{uri:'/portal/community/reward/create',  ui:''}
+        apiTopicList: {uri: '/portal/community/topic/list', ui: ''},
+        apiTopicNew: {uri: '/portal/community/topic/create', ui: ''},
+        apiIntNew: {uri: '/portal/community/intersitial/create', ui: ''},
+        apiRewardNew: {uri: '/portal/community/reward/create', ui: ''}
     };
-
+    $scope.dateOptions = {
+        changeYear: true,
+        changeMonth: true,
+        yearRange: '1900:-0'
+    };
 
     /**
      * 话题创建
@@ -58,47 +62,54 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
     $scope.activeOPen = function () {
         $("#templateModal").modal("hide");
         $scope.rawScreens[1] = $scope.activitys[$scope.index].items;
-        $scope.id=$scope.activitys[$scope.index]._id;
+        $scope.id = $scope.activitys[$scope.index]._id;
 
         $scope.activityTpl = angular.copy($scope.activitys[$scope.index].name);
     };
-   $scope.templateDbClik=function(index){
-       $scope.index=index;
-       $scope.activeOPen();
-   }
+    $scope.templateDbClik = function (index) {
+        $scope.index = index;
+        $scope.activeOPen();
+    }
 
     $scope.rawScreens = [
-        [{
-            actType: 101,
-            name: '发帖',
+        [
 
-        },
+            {
+                actType: 104,
+                name: '通知',
+
+            },
             {
                 actType: 102,
                 name: '插屏通知 '
-            }, {
-                actType: 103,
-                name: '奖励 ',
             },
             {
-                actType: 201,
-                name: '兑换码 ',
-            }, {
-            actType: 302,
-            name: '排行榜奖励 ',
-        }, {
-            actType: 301,
-            name: '登录奖励 ',
-        }, {
-            actType: 401,
-            name: '统计 ',
-        }, {
-            actType: 102,
-            name: '通知 ',
-        },
+                actType: 101,
+                 name: '发帖',
+            },
+            {
+                actType: 105,
+                name: '兑换码',
+            },{
+                actType: 103,
+                name: '奖励 ',
+            },{
+                actType: 106,
+                name: '排行版奖励 ',
+            },{
+                actType: 107,
+                name: '登陆奖励 ',
+            },
+
+            {
+                actType: 401,
+                name: '统计 ',
+            }
         ],
-        []
+        [],[],[]
     ];
+
+    var screen1Copy = angular.copy($scope.rawScreens[0]);
     $scope.event = {
         name: "",
     };
@@ -114,7 +125,7 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
                 $scope.category_class.forEach(function (category) {
                     if (category.id == $scope.rawScreens[1][$scope.activityIndex].config.category) {
                         category.isChecked = true;
-                        $scope.categoryid=category.id;
+                        $scope.categoryid = category.id;
                     } else {
                         category.isChecked = false;
 
@@ -123,7 +134,7 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
             }
 
         }
-        if(app.actType==102){
+        if (app.actType == 102) {
             $scope.activityIndex = index;
 
             $("#pointModal").modal("show");
@@ -139,7 +150,6 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
 
 
         }
-
 
 
         if (app.actType == 103) {
@@ -172,11 +182,11 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
 
     $scope.categoryClick = function (category) {
         $scope.categoryid = category.id
-        $scope.category_class.forEach(function(item){
-            if(item.categoryid==category.id){
-                category.isChecked=true;
-            }else{
-                category.isChecked=false;
+        $scope.category_class.forEach(function (item) {
+            if (item.categoryid == category.id) {
+                category.isChecked = true;
+            } else {
+                category.isChecked = false;
             }
         })
 
@@ -191,20 +201,26 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
 
 
     };
-     //插屏通知修改的确认按钮
+    //插屏通知修改的确认按钮
     $scope.pointSure = function () {
         $scope.rawScreens[1][$scope.activityIndex].name = angular.copy($scope.event.name);
 
 
-        var config = {title: angular.copy($scope.title), button_title: "OK",action:0,action_value:"",
-            start_time:Math.floor(new Date().getTime()/1000-24*3600),end_time:Math.floor(new Date().getTime()/1000+24*3600),
-            show_delay:0,
-            versions:[1.0],
-            points:[10009],
-            content: angular.copy($scope.content)};
+        var config = {
+            title: angular.copy($scope.title),
+            button_title: "OK",
+            action: 0,
+            action_value: "",
+            start_time: Math.floor(new Date().getTime() / 1000 - 24 * 3600),
+            end_time: Math.floor(new Date().getTime() / 1000 + 24 * 3600),
+            show_delay: 0,
+            versions: [1.0],
+            points: [10009],
+            content: angular.copy($scope.content)
+        };
         $scope.rawScreens[1][$scope.activityIndex].actType = 102;
         $scope.rawScreens[1][$scope.activityIndex].config = config;
-        console.log( $scope.rawScreens[1][$scope.activityIndex])
+        console.log($scope.rawScreens[1][$scope.activityIndex])
 
 
     };
@@ -239,7 +255,7 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
             $scope.tplSave($scope.Tpl).then(function (res) {
 
                 $("#templateNewModal").modal("hide")
-                $scope.id= res.data.rst._id;
+                $scope.id = res.data.rst._id;
                 $scope.itemsUpdate().then(function (resItem) {
 
                 });
@@ -255,7 +271,7 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
             console.log(res)
             $scope.rawScreens[1] = res.rst.items;
             $scope.activitys.name = res.rst.name;
-            $scope.activityTpl =res.rst.name;
+            $scope.activityTpl = res.rst.name;
             $scope.activitys._id = res.rst._id;
         })
     }
@@ -264,9 +280,9 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
     //修改活动
 
     $scope.itemsUpdate = function () {
-        if(!$scope.id){
+        if (!$scope.id) {
             $scope.saveAs();
-            return ;
+            return;
         }
         return $http.get(baseUrl + "store?m=acts&f=update&id=" + $scope.id + "&items=" + angular.toJson($scope.rawScreens[1])).success(function (res) {
             $scope.apiCall($scope.rawScreens[1])
@@ -326,65 +342,65 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
 
     }
     //portal api
-    $scope.apiCall=function(items){
-        items.forEach(function(item){
-            if(item.actType==101){
+    $scope.apiCall = function (items) {
+        items.forEach(function (item) {
+            if (item.actType == 101) {
 
-                var   postData = {
-                    "token":_apiToken,
-                    "community_id":_apiGameId,
-                    "user_id":23845476,
-                    "category":0,
-                    "content":item.config?item.config.content:"系统预置"
+                var postData = {
+                    "token": _apiToken,
+                    "community_id": _apiGameId,
+                    "user_id": 23845476,
+                    "category": 0,
+                    "content": item.config ? item.config.content : "系统预置"
                 };
 
 
-                $scope.postToApi(postData,_apiCall.apiTopicNew.uri,"urlencoded");
+                $scope.postToApi(postData, _apiCall.apiTopicNew.uri, "urlencoded");
 
             }
-            if(item.actType==102){
+            if (item.actType == 102) {
 
                 var postData = {
-                    "token":_apiToken,
-                    "community_id":_apiGameId,
-                    "title":item.config? item.config.title:"系统预置",
-                    "content": item.config?item.config.content:"系统预置",
-                    "button_title":"OK",
-                    "action":0,
+                    "token": _apiToken,
+                    "community_id": _apiGameId,
+                    "title": item.config ? item.config.title : "系统预置",
+                    "content": item.config ? item.config.content : "系统预置",
+                    "button_title": "OK",
+                    "action": 0,
                     "action_value": "",
-                    "start_time": Math.floor(new Date().getTime()/1000-24*3600),
-                    "end_time":Math.floor(new Date().getTime()/1000+24*3600),
-                    "show_delay":0,
+                    "start_time": Math.floor(new Date().getTime() / 1000 - 24 * 3600),
+                    "end_time": Math.floor(new Date().getTime() / 1000 + 24 * 3600),
+                    "show_delay": 0,
                     "versions": "[\"1.0\"]",
                     "points": "[\"100010\"]",
                     "language": "ZH_CN"
                 };
 
-                $scope.postToApi(postData,_apiCall.apiIntNew.uri,"urlencoded");
+                $scope.postToApi(postData, _apiCall.apiIntNew.uri, "urlencoded");
 
             }
-            if(item.actType==103){
+            if (item.actType == 103) {
 
 
                 var postData = {
-                    "token":_apiToken,
-                    "community_id":_apiGameId,
-                      "title":item.config? item.config.title:"系统预置",
-                      "content": item.config?item.config.content:"系统预置",
-                      "save_as": 1,
-                      "target": 0,
-                      "start_time": Math.floor(new Date().getTime()/1000-24*3600),
-                      "appearance": 0,
-                      "button_title": "领取",
-                      "end_time": Math.floor(new Date().getTime()/1000+24*3600),
-                      "language": "ZH_CN",
-                      "rewards": JSON.stringify([{reward_id: 1431940605, value: "1000"}]),
+                    "token": _apiToken,
+                    "community_id": _apiGameId,
+                    "title": item.config ? item.config.title : "系统预置",
+                    "content": item.config ? item.config.content : "系统预置",
+                    "save_as": 1,
+                    "target": 0,
+                    "start_time": Math.floor(new Date().getTime() / 1000 - 24 * 3600),
+                    "appearance": 0,
+                    "button_title": "领取",
+                    "end_time": Math.floor(new Date().getTime() / 1000 + 24 * 3600),
+                    "language": "ZH_CN",
+                    "rewards": JSON.stringify([{reward_id: 1431940605, value: "1000"}]),
 
-                      "user_ids": "[]",
-                      "versions": "[]"
+                    "user_ids": "[]",
+                    "versions": "[]"
                 };
                 console.log(postData)
-                $scope.postToApi(postData,_apiCall.apiRewardNew.uri,"urlencoded");
+                $scope.postToApi(postData, _apiCall.apiRewardNew.uri, "urlencoded");
 
             }
         })
@@ -393,25 +409,25 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
     }
 
 
-    $scope.postToApi=function(postData,url,contentType){
-        var postStr="";
-        if(contentType=='urlencoded'){
-            for(var p in postData){
-                postStr=postStr+(p+'='+postData[p]+'&');
+    $scope.postToApi = function (postData, url, contentType) {
+        var postStr = "";
+        if (contentType == 'urlencoded') {
+            for (var p in postData) {
+                postStr = postStr + (p + '=' + postData[p] + '&');
 
             }
-                postStr=postStr.substring(0,postStr.length-1)
-        }else if(contentType=='json'){
+            postStr = postStr.substring(0, postStr.length - 1)
+        } else if (contentType == 'json') {
             postStr = angular.toJson(postData);
         }
 
 
         $http({
 
-            url:_apiHost+url,
-            token:_apiToken,
+            url: _apiHost + url,
+            token: _apiToken,
 
-            method:"POST",
+            method: "POST",
 
             headers: {
 
@@ -421,22 +437,22 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
 
             data: postStr
 
-        }).success(function(res){
+        }).success(function (res) {
             console.log(url)
-            if(res.code!=0){
-                if(url==_apiCall.apiRewardNew){
-                    alert("话题创建错误："+JSON.stringify(res))
+            if (res.code != 0) {
+                if (url == _apiCall.apiRewardNew) {
+                    alert("话题创建错误：" + JSON.stringify(res))
 
                 }
-                if(url==_apiCall.apiRewardNew){
-                    alert("奖励创建错误："+JSON.stringify(res))
+                if (url == _apiCall.apiRewardNew) {
+                    alert("奖励创建错误：" + JSON.stringify(res))
 
                 }
-                if(url==_apiCall.apiIntNew){
-                    alert("插屏创建错误："+JSON.stringify(res))
+                if (url == _apiCall.apiIntNew) {
+                    alert("插屏创建错误：" + JSON.stringify(res))
 
                 }
-            }else{
+            } else {
                 alert("保存成功")
             }
             console.log("跨域成功")
@@ -484,7 +500,8 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
                 console.log("list " + _listName + ": start");
             },
             stop: function () {
-                console.log("list " + _listName + ": stop");
+                $scope.$apply($scope.rawScreens[0] = angular.copy(screen1Copy));
+
             },
             update: function () {
                 console.log("list " + _listName + ": update");
@@ -493,7 +510,7 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
         return options;
     }
 
-    $scope.sortableOptionsList = [createOptions('A'), createOptions('B')];
+    $scope.sortableOptionsList = [createOptions('A'), createOptions('B'),createOptions('C')];
 
     $scope.logModels = function () {
         $scope.sortingLog = [];
@@ -551,4 +568,42 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
 
     };
 
-});
+}).directive('ktDateTime', ['$parse', function ($parse) {
+    return {
+        require: 'ngModel',
+        link: function (scope, element, attrs, controller) {
+            controller.$formatters.push(function (value) {
+                if (angular.isDate(value)) {
+                    return KtDate.formatDateTime(value, KtDate.YY_MM_DD, KtDate.HH_MM_SS);
+                } else if (angular.isString(value)) {
+                    return value;
+                } else if (angular.isNumber(value)) {
+                    return KtDate.formatDateTime(new Date(value), KtDate.YY_MM_DD, KtDate.HH_MM_SS);
+                }
+            });
+
+            var getOptions = function () {
+                return angular.extend({},  scope.$eval(attrs.ktDateTime));
+            };
+            var opts = getOptions();
+            opts.onSelect = function (value, picker) {
+                scope.$apply(function () {
+                    controller.$setViewValue(value);
+                });
+            };
+            opts.onClose = function (value, picker) {
+                scope.$apply(function () {
+                    controller.$setViewValue(value);
+                    //                    scope.$parent.editFlag = false;
+                });
+            };
+            if (angular.equals(opts.pickerType, "timePicker")) {
+                element.timepicker(opts);
+            } else if (angular.equals(opts.pickerType, "dateTimePicker")) {
+                element.datetimepicker(opts);
+            } else {
+                element.datepicker(opts);
+            }
+        }
+    };
+}]);
