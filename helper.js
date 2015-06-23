@@ -6,7 +6,7 @@ var KtDate = function () {
         Y_MM_DD: "y-mm-dd",
         YY_MM_DD: "yy-mm-dd",
         HH_MM_SS: "HH:mm:ss",
-        YY_MM_DD_HH_MM_SS: "yy-mm-dd HH:mm:ss",
+        YY_MM_DD_HH_MM_SS: "yy-mm-dd HH:00:00",
 
         formatDate: function (date, format) {
             if (null !== date && undefined !== date) {
@@ -14,24 +14,7 @@ var KtDate = function () {
             }
             return null;
         },
-        formatTime: function (time, format) {
-            if (null !== time && undefined !== time) {
-                return $.datepicker.formatTime(format, {
-                    hour: time.getHours(),
-                    minute: time.getMinutes(),
-                    second: time.getSeconds(),
-                    millisec: time.getMilliseconds(),
-                    timezone: time.getTimezoneOffset()
-                });
-            }
-            return null;
-        },
-        formatDateTime: function (dateTime, dateFormat, timeFormat) {
-            if (null !== dateTime && undefined !== dateTime) {
-                return this.formatDate(dateTime, dateFormat) + " " + this.formatTime(dateTime, timeFormat);
-            }
-            return null;
-        },
+
         getAgeFromBirthday: function (birth) {
             if (birth) {
                 if (birth instanceof Date) {

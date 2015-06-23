@@ -17,9 +17,11 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
         apiRewardNew: {uri: '/portal/community/reward/create', ui: ''}
     };
     $scope.dateOptions = {
-        changeYear: true,
-        changeMonth: true,
-        yearRange: '1900:-0'
+        pickerType:"dateTimePicker",
+        lang:'ch',
+        timeFormat:"HH:00:00",
+        dateFormat:"yy-mm-dd"
+
     };
 
     /**
@@ -174,6 +176,7 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
 
     };
 
+    $scope.beginDate=new Date();
 
     $scope.appearanceClick = function (appearance) {
         $scope.appearanceid = appearance.id;
@@ -568,17 +571,18 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
 
     };
 
-}).directive('ktDateTime', ['$parse', function ($parse) {
+}).directive('ktDateTime', ['$parse','$filter', function ($parse,$filter) {
     return {
         require: 'ngModel',
         link: function (scope, element, attrs, controller) {
             controller.$formatters.push(function (value) {
                 if (angular.isDate(value)) {
-                    return KtDate.formatDateTime(value, KtDate.YY_MM_DD, KtDate.HH_MM_SS);
+
+                    return $filter('date')(value,"yyyy-mm-dd HH:00:00")
                 } else if (angular.isString(value)) {
                     return value;
                 } else if (angular.isNumber(value)) {
-                    return KtDate.formatDateTime(new Date(value), KtDate.YY_MM_DD, KtDate.HH_MM_SS);
+                    return $filter('date')(new Date(value), "yyyy-mm-dd HH:00:00");
                 }
             });
 
@@ -588,12 +592,12 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
             var opts = getOptions();
             opts.onSelect = function (value, picker) {
                 scope.$apply(function () {
-                    controller.$setViewValue(value);
+                    controller.$setViewValue($filter('date')(new Date(value), "yyyy-mm-dd HH:00:00"));
                 });
             };
             opts.onClose = function (value, picker) {
                 scope.$apply(function () {
-                    controller.$setViewValue(value);
+                    controller.$setViewValue($filter('date')(value, "yyyy-mm-dd HH:00:00"));
                     //                    scope.$parent.editFlag = false;
                 });
             };

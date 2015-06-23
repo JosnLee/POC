@@ -12,6 +12,7 @@
     <meta name="fragment" content="!" />
     <link rel="stylesheet" type="text/css" href="vender/bootstrap/v2.3.2/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="vender/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="vender/jquery.datetimepicker.css">
     <link rel="stylesheet" type="text/css" href="poc.css">
  </head>
 <body style="background-image:url(linen-lighter.png)">
@@ -39,8 +40,8 @@
             </div>
 
         </div>
-        <div style="float: left;width: 75%; margin-left: 20px;min-height: 100px" >
-            <div style="margin-left: 20px">预热阶段<label style="margin-left: 10px">开始时间:<input kt-date-time min-date="minDate" ng-model="beginDate" ></label><label>结束时间:<input type="date" ></label></div>
+        <div style="float: right;width: 75%; margin-left: 20px;min-height: 100px" >
+            <div style="margin-left: 20px">预热阶段<label style="margin-left: 10px">开始时间:<input  kt-date-time="dateOptions" ng-model="beginDate" ></label><label>结束时间:<input kt-date-time="dateOptions" ng-model="endDate"></label></div>
 
             <div style="width: 90%" ui-sortable="sortableOptionsList[1]" class="apps-container screen floatleft" ng-model="rawScreens[1]">
                 <div  style="text-align: left;height: 80px;" class="app" ng-repeat="app in rawScreens[1]">
@@ -66,8 +67,8 @@
             </div>
             <div style="clear: both;"></div>
         </div>
-        <div style="float: left;width: 75%; margin-left: 20px;min-height: 100px" >
-            <div style="margin-left: 20px">进行阶段<label style="margin-left: 10px">开始时间:<input type="date" ></label><label>结束时间:<input type="date" ></label></div>
+        <div style="float: right;width: 75%; margin-left: 20px;min-height: 100px" >
+            <div style="margin-left: 20px">进行阶段<label style="margin-left: 10px">开始时间:<input kt-date-time="dateOptions" ng-model="beginDate" ></label><label>结束时间:<input kt-date-time="dateOptions" ng-model="beginDate"></label></div>
 
             <div style="width: 90%" ui-sortable="sortableOptionsList[2]" class="apps-container screen floatleft" ng-model="rawScreens[2]">
                 <div  style="text-align: left;height: 80px;" class="app" ng-repeat="app in rawScreens[2]">
@@ -93,9 +94,9 @@
             </div>
             <div style="clear: both;"></div>
         </div>
-        <div style="float: left;width: 75%; margin-left: 20px;min-height: 100px" >
+        <div style="float: right;width: 75%; margin-left: 20px;min-height: 100px" >
 
-            <div style="margin-left: 20px">结束阶段<label style="margin-left: 10px">开始时间:<input type="date" ></label><label>结束时间:<input type="date" ></label></div>
+            <div style="margin-left: 20px">结束阶段<label style="margin-left: 10px">开始时间:<input kt-date-time="dateOptions" ng-model="beginDate" ></label><label>结束时间:<input kt-date-time="dateOptions" ng-model="beginDate" ></label></div>
 
             <div style="width: 90%" ui-sortable="sortableOptionsList[3]" class="apps-container screen floatleft" ng-model="rawScreens[3]">
                 <div  style="text-align: left;height: 80px;" class="app" ng-repeat="app in rawScreens[3]">
@@ -296,6 +297,7 @@
     <script src="vender/sortable.js"></script>
     <script src="vender/date.js"></script>
     <script src="vender/bootstrap/v2.3.2/js/bootstrap.min.js"></script>
+    <script src="vender/jquery.datetimepicker.js"></script>
     <script src="pocJS.js"></script>
 
 </div>
