@@ -20,7 +20,7 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
         pickerType:"dateTimePicker",
         lang:'ch',
         timeFormat:"HH:00:00",
-        dateFormat:"yy-mm-dd"
+        dateFormat:"yy/mm/dd"
 
     };
 
@@ -63,7 +63,19 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
 
     $scope.activeOPen = function () {
         $("#templateModal").modal("hide");
-        $scope.rawScreens[1] = $scope.activitys[$scope.index].items;
+        $scope.rawScreens=[screen1Copy]
+        $scope.activitys[$scope.index].areas.forEach(function(area){
+            var itemTmp=[];
+            $scope.activitys[$scope.index].items.forEach(function(item){
+                if(area.id==item.actArea){
+                    itemTmp.$$name=area.name;
+                    itemTmp.$$beginDate=area.areaConfig.beginDate;
+                    itemTmp.$$endDate=area.areaConfig.endDate;
+                    itemTmp.push(item);
+                }
+            });
+            $scope.rawScreens.push(itemTmp);
+        });
         $scope.id = $scope.activitys[$scope.index]._id;
 
         $scope.activityTpl = angular.copy($scope.activitys[$scope.index].name);
@@ -71,7 +83,11 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
     $scope.templateDbClik = function (index) {
         $scope.index = index;
         $scope.activeOPen();
-    }
+    };
+
+    $scope.deleteArea=function(index){
+       $scope.rawScreens.splice(index,1)
+    };
 
     $scope.rawScreens = [
         [
@@ -108,9 +124,14 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
                 name: '统计 ',
             }
         ],
-        [],[],[]
+        []
     ];
 
+
+    $scope.newArea=function(){
+
+        $scope.rawScreens.push([])
+    }
     var screen1Copy = angular.copy($scope.rawScreens[0]);
     $scope.event = {
         name: "",
@@ -121,11 +142,11 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
         if (app.actType == 101) {
             $("#myModal").modal("show");
             $scope.activityIndex = index;
-            $scope.event.name = $scope.rawScreens[1][$scope.activityIndex].name;
-            if ($scope.rawScreens[1][$scope.activityIndex].hasOwnProperty("config")) {
-                $scope.content = $scope.rawScreens[1][$scope.activityIndex].config.content;
+            $scope.event.name = app.name;
+            if (app.hasOwnProperty("config")) {
+                $scope.content = app.config.content;
                 $scope.category_class.forEach(function (category) {
-                    if (category.id == $scope.rawScreens[1][$scope.activityIndex].config.category) {
+                    if (category.id == app.config.category) {
                         category.isChecked = true;
                         $scope.categoryid = category.id;
                     } else {
@@ -140,13 +161,13 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
             $scope.activityIndex = index;
 
             $("#pointModal").modal("show");
-            $scope.event.name = $scope.rawScreens[1][$scope.activityIndex].name;
+            $scope.event.name = app.name;
 
-            if ($scope.rawScreens[1][$scope.activityIndex].hasOwnProperty("config")) {
+            if (app.hasOwnProperty("config")) {
 
-                $scope.title = $scope.rawScreens[1][$scope.activityIndex].config.title;
+                $scope.title = app.config.title;
 
-                $scope.content = $scope.rawScreens[1][$scope.activityIndex].config.content;
+                $scope.content = app.config.content;
 
             }
 
@@ -157,12 +178,12 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
         if (app.actType == 103) {
             $("#rewardModal").modal("show");
             $scope.activityIndex = index;
-            $scope.event.name = $scope.rawScreens[1][$scope.activityIndex].name;
-            if ($scope.rawScreens[1][$scope.activityIndex].hasOwnProperty("config")) {
-                $scope.content = $scope.rawScreens[1][$scope.activityIndex].config.content;
-                $scope.title = $scope.rawScreens[1][$scope.activityIndex].config.title;
+            $scope.event.name = app.name;
+            if (app.hasOwnProperty("config")) {
+                $scope.content = app.config.content;
+                $scope.title = app.config.title;
                 $scope.appearances.forEach(function (appearance) {
-                    if (appearance.id == $scope.rawScreens[1][$scope.activityIndex].config.appearance) {
+                    if (appearance.id == app.config.appearance) {
                         appearance.isChecked = true;
                     } else {
                         appearance.isChecked = false;
@@ -176,7 +197,7 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
 
     };
 
-    $scope.beginDate=new Date();
+    $scope.beginDate=$filter('date')(new Date(),"yyyy/MM/dd hh:00:00");
 
     $scope.appearanceClick = function (appearance) {
         $scope.appearanceid = appearance.id;
@@ -283,12 +304,28 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
     //修改活动
 
     $scope.itemsUpdate = function () {
+        var items=[];
+        var areas=[];
+        for(var i=0;i<$scope.rawScreens.length;i++){
+            if(i>0){
+                var areaConfig={beginDate:$scope.rawScreens[i].$$beginDate+":00",endDate:$scope.rawScreens[i].$$endDate+":00"};
+
+                areas.push({id:i-1,name:$scope.rawScreens[i].$$name,areaConfig:areaConfig});
+                items=items.concat($scope.rawScreens[i]);
+            }
+        }
+
+
+
         if (!$scope.id) {
             $scope.saveAs();
             return;
         }
-        return $http.get(baseUrl + "store?m=acts&f=update&id=" + $scope.id + "&items=" + angular.toJson($scope.rawScreens[1])).success(function (res) {
-            $scope.apiCall($scope.rawScreens[1])
+
+
+
+        return $http.get(baseUrl + "store?m=acts&f=update&id=" + $scope.id + "&items=" + angular.toJson(items)+"&areas="+angular.toJson(areas)).success(function (res) {
+            $scope.apiCall(items)
             return res;
         }).error(function (error) {
             return error;
@@ -318,16 +355,11 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
     $scope.templateChecked = function (index) {
         $scope.index = index;
     }
-    $scope.delete = function (index) {
-        var names = [];
-        $scope.rawScreens[0].forEach(function (rowItem) {
-            names.push(rowItem.name);
-        })
-        if ($.inArray($scope.rawScreens[1][index].name, names) < 0) {
-            $scope.rawScreens[0].push({name: $scope.rawScreens[1][index].name})
 
-        }
-        $scope.rawScreens[1].splice(index, 1);
+    //删除
+    $scope.delete = function (index,parentIndex) {
+
+        $scope.rawScreens[parentIndex].splice(index, 1);
 
     }
 
@@ -578,11 +610,11 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
             controller.$formatters.push(function (value) {
                 if (angular.isDate(value)) {
 
-                    return $filter('date')(value,"yyyy-mm-dd HH:00:00")
+                    return $filter('date')(value,"yyyy/mm/dd HH:00:00")
                 } else if (angular.isString(value)) {
                     return value;
                 } else if (angular.isNumber(value)) {
-                    return $filter('date')(new Date(value), "yyyy-mm-dd HH:00:00");
+                    return $filter('date')(new Date(value), "yyyy/mm/dd HH:00:00");
                 }
             });
 
@@ -592,12 +624,13 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
             var opts = getOptions();
             opts.onSelect = function (value, picker) {
                 scope.$apply(function () {
-                    controller.$setViewValue($filter('date')(new Date(value), "yyyy-mm-dd HH:00:00"));
+                    controller.$setViewValue($filter('date')(new Date(value), "yyyy/mm/dd HH:00:00"));
                 });
             };
             opts.onClose = function (value, picker) {
+
                 scope.$apply(function () {
-                    controller.$setViewValue($filter('date')(value, "yyyy-mm-dd HH:00:00"));
+                    controller.$setViewValue($filter('date')(value, "yyyy/mm/dd HH:00:00"));
                     //                    scope.$parent.editFlag = false;
                 });
             };

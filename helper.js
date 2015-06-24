@@ -15,7 +15,7 @@ var KtDate = function () {
             return null;
         },
 
-        getAgeFromBirthday: function (birth) {
+         getAgeFromBirthday: function (birth) {
             if (birth) {
                 if (birth instanceof Date) {
                     birth = this.formatDate(birth, this.YY_MM_DD);

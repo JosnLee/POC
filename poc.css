@@ -58,6 +58,11 @@
     text-align: center;
     cursor:pointer;
 }
+
+i{
+    cursor:pointer;
+
+}
 label{
     display: inline-block;
 }
