@@ -16,6 +16,18 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
         apiIntNew: {uri: '/portal/community/intersitial/create', ui: ''},
         apiRewardNew: {uri: '/portal/community/reward/create', ui: ''}
     };
+
+
+    function getQueryString(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]); return null;
+    }
+
+
+    $scope._id=getQueryString("id");
+
+
     $scope.dateOptions = {
         pickerType:"dateTimePicker",
         lang:'ch',
@@ -23,6 +35,8 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
         dateFormat:"yy/mm/dd"
 
     };
+
+
 
     /**
      * 话题创建
@@ -301,6 +315,7 @@ myapp.controller('sortableController', function ($scope, $http, $filter) {
     }
 
 
+    $scope.getTplById($scope._id);
     //修改活动
 
     $scope.itemsUpdate = function () {
